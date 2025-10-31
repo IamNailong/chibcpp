@@ -1,0 +1,143 @@
+//===--- TokenKinds.def - C Family Token Kind Database ---------*- C++ -*-===//
+//
+// Part of the ChibCC Project
+//
+//===----------------------------------------------------------------------===//
+//
+// This file defines the TokenKind database. This includes normal tokens like
+// identifiers, string literals, etc. as well as keywords for various languages.
+//
+//===----------------------------------------------------------------------===//
+
+#ifndef TOK
+#define TOK(X)
+#endif
+#ifndef PUNCTUATOR
+#define PUNCTUATOR(X,Y) TOK(X)
+#endif
+#ifndef KEYWORD
+#define KEYWORD(X,Y) TOK(kw_ ## X)
+#endif
+
+//===----------------------------------------------------------------------===//
+// Preprocessor tokens.
+//===----------------------------------------------------------------------===//
+
+// These define members of the tok::* namespace.
+
+TOK(unknown)             // Not a token.
+TOK(eof)                 // End of file.
+TOK(eod)                 // End of preprocessing directive (end of line inside a
+                         // directive).
+TOK(code_completion)     // Code completion marker
+
+//===----------------------------------------------------------------------===//
+// Language keywords.
+//===----------------------------------------------------------------------===//
+
+// These define members of the tok::kw_* namespace.  Note that keywords are
+// always first-class tokens.
+KEYWORD(auto                        , KEYALL)
+KEYWORD(break                       , KEYALL)
+KEYWORD(case                        , KEYALL)
+KEYWORD(char                        , KEYALL)
+KEYWORD(const                       , KEYALL)
+KEYWORD(continue                    , KEYALL)
+KEYWORD(default                     , KEYALL)
+KEYWORD(do                          , KEYALL)
+KEYWORD(double                      , KEYALL)
+KEYWORD(else                        , KEYALL)
+KEYWORD(enum                        , KEYALL)
+KEYWORD(extern                      , KEYALL)
+KEYWORD(float                       , KEYALL)
+KEYWORD(for                         , KEYALL)
+KEYWORD(goto                        , KEYALL)
+KEYWORD(if                          , KEYALL)
+KEYWORD(int                         , KEYALL)
+KEYWORD(long                        , KEYALL)
+KEYWORD(register                    , KEYALL)
+KEYWORD(return                      , KEYALL)
+KEYWORD(short                       , KEYALL)
+KEYWORD(signed                      , KEYALL)
+KEYWORD(sizeof                      , KEYALL)
+KEYWORD(static                      , KEYALL)
+KEYWORD(struct                      , KEYALL)
+KEYWORD(switch                      , KEYALL)
+KEYWORD(typedef                     , KEYALL)
+KEYWORD(union                       , KEYALL)
+KEYWORD(unsigned                    , KEYALL)
+KEYWORD(void                        , KEYALL)
+KEYWORD(volatile                    , KEYALL)
+KEYWORD(while                       , KEYALL)
+
+//===----------------------------------------------------------------------===//
+// Literals
+//===----------------------------------------------------------------------===//
+
+TOK(numeric_constant)    // 0x123
+TOK(char_constant)       // 'a'
+TOK(string_literal)      // "foo"
+
+//===----------------------------------------------------------------------===//
+// Identifiers.
+//===----------------------------------------------------------------------===//
+
+TOK(identifier)          // abcde123
+
+//===----------------------------------------------------------------------===//
+// C/C++ Punctuators.
+//===----------------------------------------------------------------------===//
+
+PUNCTUATOR(l_square,            "[")
+PUNCTUATOR(r_square,            "]")
+PUNCTUATOR(l_paren,             "(")
+PUNCTUATOR(r_paren,             ")")
+PUNCTUATOR(l_brace,             "{")
+PUNCTUATOR(r_brace,             "}")
+PUNCTUATOR(period,              ".")
+PUNCTUATOR(ellipsis,            "...")
+PUNCTUATOR(amp,                 "&")
+PUNCTUATOR(ampamp,              "&&")
+PUNCTUATOR(ampequal,            "&=")
+PUNCTUATOR(star,                "*")
+PUNCTUATOR(starequal,           "*=")
+PUNCTUATOR(plus,                "+")
+PUNCTUATOR(plusplus,            "++")
+PUNCTUATOR(plusequal,           "+=")
+PUNCTUATOR(minus,               "-")
+PUNCTUATOR(arrow,               "->")
+PUNCTUATOR(minusminus,          "--")
+PUNCTUATOR(minusequal,          "-=")
+PUNCTUATOR(tilde,               "~")
+PUNCTUATOR(exclaim,             "!")
+PUNCTUATOR(exclaimequal,        "!=")
+PUNCTUATOR(slash,               "/")
+PUNCTUATOR(slashequal,          "/=")
+PUNCTUATOR(percent,             "%")
+PUNCTUATOR(percentequal,        "%=")
+PUNCTUATOR(less,                "<")
+PUNCTUATOR(lessless,            "<<")
+PUNCTUATOR(lessequal,           "<=")
+PUNCTUATOR(lesslessequal,       "<<=")
+PUNCTUATOR(greater,             ">")
+PUNCTUATOR(greatergreater,      ">>")
+PUNCTUATOR(greaterequal,        ">=")
+PUNCTUATOR(greatergreaterequal, ">>=")
+PUNCTUATOR(caret,               "^")
+PUNCTUATOR(caretequal,          "^=")
+PUNCTUATOR(pipe,                "|")
+PUNCTUATOR(pipepipe,            "||")
+PUNCTUATOR(pipeequal,           "|=")
+PUNCTUATOR(question,            "?")
+PUNCTUATOR(colon,               ":")
+PUNCTUATOR(semi,                ";")
+PUNCTUATOR(equal,               "=")
+PUNCTUATOR(equalequal,          "==")
+PUNCTUATOR(comma,               ",")
+PUNCTUATOR(hash,                "#")
+PUNCTUATOR(hashhash,            "##")
+PUNCTUATOR(hashat,              "#@")
+
+#undef KEYWORD
+#undef PUNCTUATOR
+#undef TOK

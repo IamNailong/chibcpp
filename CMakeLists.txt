@@ -1,11 +1,33 @@
-cmake_minimum_required(VERSION 3.22)
-project(chibcpp VERSION 0.1
-        LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.16)
+project(ChibCC VERSION 1.0.0 LANGUAGES CXX)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-set(CMAKE_RUNTIME_OUTPUT_LIB_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(chibcpp
+# Set compiler flags following LLVM style
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+
+# Include directories
+include_directories(include)
+
+# Source files
+set(SOURCES
+    src/Diagnostic.cpp
+    src/TokenKinds.cpp
+    src/Tokenizer.cpp
+    src/Parser.cpp
+    src/CodeGenerator.cpp
     main.cpp
+)
+
+# Create executable
+add_executable(chibcc ${SOURCES})
+
+# Set output directory
+set_target_properties(chibcc PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
 )
