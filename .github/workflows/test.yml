@@ -44,6 +44,9 @@ jobs:
         echo "Generated assembly:"
         cat test_output.s
         
+        # Add GNU stack note to fix linker warning
+        echo ".section .note.GNU-stack,\"\",@progbits" >> test_output.s
+        
         # Try to assemble and run
         gcc -o test_program test_output.s
         ./test_program

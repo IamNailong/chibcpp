@@ -31,6 +31,9 @@ run_test() {
     if $COMPILER "$input" > "$RESULTS_DIR/${test_name}.s" 2> "$RESULTS_DIR/${test_name}.err"; then
         echo -e "${GREEN}✓ Compilation successful${NC}"
         
+        # Add GNU stack note to fix linker warning
+        echo ".section .note.GNU-stack,\"\",@progbits" >> "$RESULTS_DIR/${test_name}.s"
+        
         # Show generated assembly
         echo "Generated assembly:"
         cat "$RESULTS_DIR/${test_name}.s"
