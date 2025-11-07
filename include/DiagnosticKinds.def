@@ -1,0 +1,92 @@
+//===--- DiagnosticKinds.def - C Family Diagnostic Kind Database -*- C++
+//-*-===//
+//
+// Part of the ChibCC Project
+//
+//===----------------------------------------------------------------------===//
+//
+// This file defines the diagnostic kind database.
+//
+//===----------------------------------------------------------------------===//
+
+#ifndef DIAG
+#define DIAG(ENUM, LEVEL, DESC)
+#endif
+
+//===----------------------------------------------------------------------===//
+// Lexical Analysis (Tokenizer) Diagnostics
+//===----------------------------------------------------------------------===//
+
+DIAG(err_invalid_character, Error, "invalid character '%0' in source file")
+DIAG(err_unterminated_string, Error, "unterminated string literal")
+DIAG(err_unterminated_char, Error, "unterminated character constant")
+DIAG(err_empty_character, Error, "empty character constant")
+DIAG(err_multichar_character, Error, "multi-character character constant")
+DIAG(err_invalid_escape_sequence, Error, "invalid escape sequence '\\%0'")
+DIAG(err_invalid_numeric_literal, Error, "invalid numeric literal")
+DIAG(err_numeric_literal_too_large, Error, "numeric literal is too large")
+
+DIAG(warn_trigraph, Warning, "trigraph converted to '%0' character")
+DIAG(warn_multichar_character_literal, Warning,
+     "multi-character character constant")
+
+//===----------------------------------------------------------------------===//
+// Parsing Diagnostics
+//===----------------------------------------------------------------------===//
+
+DIAG(err_expected_token, Error, "expected '%0'")
+DIAG(err_expected_expression, Error, "expected expression")
+DIAG(err_expected_statement, Error, "expected statement")
+DIAG(err_expected_declaration, Error, "expected declaration")
+DIAG(err_expected_identifier, Error, "expected identifier")
+DIAG(err_expected_type, Error, "expected type name")
+
+DIAG(err_unexpected_token, Error, "unexpected token '%0'")
+DIAG(err_extra_tokens, Error, "extra tokens at end of directive")
+DIAG(err_missing_semicolon, Error, "expected ';' after %0")
+DIAG(err_missing_comma, Error, "expected ',' between %0")
+
+DIAG(err_unmatched_paren, Error, "expected ')' to match this '('")
+DIAG(err_unmatched_brace, Error, "expected '}' to match this '{'")
+DIAG(err_unmatched_bracket, Error, "expected ']' to match this '['")
+
+//===----------------------------------------------------------------------===//
+// Semantic Analysis Diagnostics
+//===----------------------------------------------------------------------===//
+
+DIAG(err_undeclared_identifier, Error, "use of undeclared identifier '%0'")
+DIAG(err_redefinition, Error, "redefinition of '%0'")
+DIAG(err_conflicting_types, Error, "conflicting types for '%0'")
+DIAG(err_incompatible_types, Error, "incompatible types: '%0' and '%1'")
+DIAG(err_invalid_operands, Error,
+     "invalid operands to binary expression ('%0' and '%1')")
+DIAG(err_invalid_unary_operand, Error,
+     "invalid operand to unary expression ('%0')")
+
+DIAG(err_division_by_zero, Error, "division by zero")
+DIAG(err_modulo_by_zero, Error, "modulo by zero")
+
+DIAG(warn_unused_variable, Warning, "unused variable '%0'")
+DIAG(warn_uninitialized_variable, Warning,
+     "variable '%0' is uninitialized when used here")
+DIAG(warn_implicit_conversion, Warning, "implicit conversion from '%0' to '%1'")
+
+//===----------------------------------------------------------------------===//
+// Code Generation Diagnostics
+//===----------------------------------------------------------------------===//
+
+DIAG(err_unsupported_feature, Error, "unsupported feature: %0")
+DIAG(err_internal_error, Error, "internal compiler error: %0")
+
+DIAG(note_previous_declaration, Note, "previous declaration is here")
+DIAG(note_previous_definition, Note, "previous definition is here")
+DIAG(note_to_match_this, Note, "to match this '%0'")
+
+//===----------------------------------------------------------------------===//
+// General Diagnostics
+//===----------------------------------------------------------------------===//
+
+DIAG(fatal_too_many_errors, Fatal, "too many errors emitted, stopping now")
+DIAG(note_include_translation_unit, Note, "in file included from %0:%1:")
+
+#undef DIAG
