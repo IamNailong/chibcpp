@@ -20,29 +20,11 @@ int main(int Argc, char **Argv) {
   // Create lexer
   Lexer Lex(Input, Input + strlen(Input), Diags);
   
-  // Tokenize all input into a linked list
-  std::unique_ptr<Token> Head = std::make_unique<Token>();
-  Token *Current = Head.get();
-  
-  while (true) {
-    auto Tok = Lex.lex();
-    Current->Next = std::move(Tok);
-    Current = Current->Next.get();
-    if (Current->Kind == tok::eof) {
-      break;
-    }
-  }
-
-  // Check for lexical errors
-  if (Diags.hasErrorOccurred()) {
-    return 1;
-  }
-
-  // Parse tokens into AST
+  // Parse input into AST (lexer is called on-demand during parsing)
   Parser P(Lex);
-  auto Ast = P.parse(Head->Next.get());
+  auto Ast = P.parse();
 
-  // Check for parse errors
+  // Check for errors
   if (Diags.hasErrorOccurred()) {
     return 1;
   }

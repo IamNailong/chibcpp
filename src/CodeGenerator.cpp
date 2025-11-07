@@ -79,6 +79,9 @@ void CodeGenerator::codegen(Node *N) {
   genExpr(N);
   printf("  ret\n");
 
+  // Add GNU stack note to prevent executable stack warning
+  printf("  .section .note.GNU-stack,\"\",%%progbits\n");
+
   assert(Depth == 0);
 }
 

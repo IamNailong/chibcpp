@@ -6,6 +6,44 @@ namespace chibcc {
 // Parser Implementation
 //===----------------------------------------------------------------------===//
 
+// Token management methods
+
+void Parser::nextToken() {
+  CurTok = Lex.lex();
+}
+
+bool Parser::match(const char *Op) {
+  if (check(Op)) {
+    nextToken();
+    return true;
+  }
+  return false;
+}
+
+bool Parser::match(tok::TokenKind Kind) {
+  if (check(Kind)) {
+    nextToken();
+    return true;
+  }
+  return false;
+}
+
+void Parser::expect(const char *Op) {
+  if (!match(Op)) {
+    errorTok(CurTok.get(), "expected '%s'", Op);
+  }
+}
+
+bool Parser::check(const char *Op) {
+  return CurTok && Lexer::equal(CurTok.get(), Op);
+}
+
+bool Parser::check(tok::TokenKind Kind) {
+  return CurTok && CurTok->Kind == Kind;
+}
+
+// AST node creation helpers
+
 std::unique_ptr<Node> Parser::newNode(NodeKind Kind) {
   return std::make_unique<Node>(Kind);
 }
@@ -32,137 +70,138 @@ std::unique_ptr<Node> Parser::newNum(int Val) {
   return N;
 }
 
+// Grammar rules
+
 // expr = equality
-std::unique_ptr<Node> Parser::expr(Token **Rest, Token *Tok) {
-  return equality(Rest, Tok);
+std::unique_ptr<Node> Parser::expr() {
+  return equality();
 }
 
 // equality = relational ("==" relational | "!=" relational)*
-std::unique_ptr<Node> Parser::equality(Token **Rest, Token *Tok) {
-  auto N = relational(&Tok, Tok);
+std::unique_ptr<Node> Parser::equality() {
+  auto N = relational();
 
   for (;;) {
-    if (Lexer::equal(Tok, "==")) {
-      N = newBinary(NodeKind::Eq, std::move(N),
-                    relational(&Tok, Tok->Next.get()));
+    if (match("==")) {
+      N = newBinary(NodeKind::Eq, std::move(N), relational());
       continue;
     }
 
-    if (Lexer::equal(Tok, "!=")) {
-      N = newBinary(NodeKind::Ne, std::move(N),
-                    relational(&Tok, Tok->Next.get()));
+    if (match("!=")) {
+      N = newBinary(NodeKind::Ne, std::move(N), relational());
       continue;
     }
 
-    *Rest = Tok;
     return N;
   }
 }
 
 // relational = add ("<" add | "<=" add | ">" add | ">=" add)*
-std::unique_ptr<Node> Parser::relational(Token **Rest, Token *Tok) {
-  auto N = add(&Tok, Tok);
+std::unique_ptr<Node> Parser::relational() {
+  auto N = add();
 
   for (;;) {
-    if (Lexer::equal(Tok, "<")) {
-      N = newBinary(NodeKind::Lt, std::move(N), add(&Tok, Tok->Next.get()));
+    if (match("<")) {
+      N = newBinary(NodeKind::Lt, std::move(N), add());
       continue;
     }
 
-    if (Lexer::equal(Tok, "<=")) {
-      N = newBinary(NodeKind::Le, std::move(N), add(&Tok, Tok->Next.get()));
+    if (match("<=")) {
+      N = newBinary(NodeKind::Le, std::move(N), add());
       continue;
     }
 
-    if (Lexer::equal(Tok, ">")) {
-      N = newBinary(NodeKind::Lt, add(&Tok, Tok->Next.get()), std::move(N));
+    if (match(">")) {
+      N = newBinary(NodeKind::Lt, add(), std::move(N));
       continue;
     }
 
-    if (Lexer::equal(Tok, ">=")) {
-      N = newBinary(NodeKind::Le, add(&Tok, Tok->Next.get()), std::move(N));
+    if (match(">=")) {
+      N = newBinary(NodeKind::Le, add(), std::move(N));
       continue;
     }
 
-    *Rest = Tok;
     return N;
   }
 }
 
 // add = mul ("+" mul | "-" mul)*
-std::unique_ptr<Node> Parser::add(Token **Rest, Token *Tok) {
-  auto N = mul(&Tok, Tok);
+std::unique_ptr<Node> Parser::add() {
+  auto N = mul();
 
   for (;;) {
-    if (Lexer::equal(Tok, "+")) {
-      N = newBinary(NodeKind::Add, std::move(N), mul(&Tok, Tok->Next.get()));
+    if (match("+")) {
+      N = newBinary(NodeKind::Add, std::move(N), mul());
       continue;
     }
 
-    if (Lexer::equal(Tok, "-")) {
-      N = newBinary(NodeKind::Sub, std::move(N), mul(&Tok, Tok->Next.get()));
+    if (match("-")) {
+      N = newBinary(NodeKind::Sub, std::move(N), mul());
       continue;
     }
 
-    *Rest = Tok;
     return N;
   }
 }
 
 // mul = unary ("*" unary | "/" unary)*
-std::unique_ptr<Node> Parser::mul(Token **Rest, Token *Tok) {
-  auto N = unary(&Tok, Tok);
+std::unique_ptr<Node> Parser::mul() {
+  auto N = unary();
 
   for (;;) {
-    if (Lexer::equal(Tok, "*")) {
-      N = newBinary(NodeKind::Mul, std::move(N), unary(&Tok, Tok->Next.get()));
+    if (match("*")) {
+      N = newBinary(NodeKind::Mul, std::move(N), unary());
       continue;
     }
 
-    if (Lexer::equal(Tok, "/")) {
-      N = newBinary(NodeKind::Div, std::move(N), unary(&Tok, Tok->Next.get()));
+    if (match("/")) {
+      N = newBinary(NodeKind::Div, std::move(N), unary());
       continue;
     }
 
-    *Rest = Tok;
     return N;
   }
 }
 
 // unary = ("+" | "-") unary
 //       | primary
-std::unique_ptr<Node> Parser::unary(Token **Rest, Token *Tok) {
-  if (Lexer::equal(Tok, "+"))
-    return unary(Rest, Tok->Next.get());
+std::unique_ptr<Node> Parser::unary() {
+  if (match("+"))
+    return unary();
 
-  if (Lexer::equal(Tok, "-"))
-    return newUnary(NodeKind::Neg, unary(Rest, Tok->Next.get()));
+  if (match("-"))
+    return newUnary(NodeKind::Neg, unary());
 
-  return primary(Rest, Tok);
+  return primary();
 }
 
 // primary = "(" expr ")" | num
-std::unique_ptr<Node> Parser::primary(Token **Rest, Token *Tok) {
-  if (Lexer::equal(Tok, "(")) {
-    auto N = expr(&Tok, Tok->Next.get());
-    *Rest = Lexer::skip(Tok, ")");
+std::unique_ptr<Node> Parser::primary() {
+  if (match("(")) {
+    auto N = expr();
+    expect(")");
     return N;
   }
 
-  if (Tok->Kind == tok::numeric_constant) {
-    auto N = newNum(Tok->IntegerValue);
-    *Rest = Tok->Next.get();
+  if (check(tok::numeric_constant)) {
+    auto N = newNum(CurTok->IntegerValue);
+    nextToken();
     return N;
   }
 
-  errorTok(Tok, "expected an expression");
+  errorTok(CurTok.get(), "expected an expression");
   return nullptr; // Never reached
 }
 
-std::unique_ptr<Node> Parser::parse(Token *Tok) {
-  auto N = expr(&Tok, Tok);
-  if (Tok->Kind != tok::eof)
-    errorTok(Tok, "extra token");
+std::unique_ptr<Node> Parser::parse() {
+  // Initialize by reading first token
+  nextToken();
+  
+  auto N = expr();
+  
+  if (!check(tok::eof))
+    errorTok(CurTok.get(), "extra token");
+  
   return N;
 }
 
