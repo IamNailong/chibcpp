@@ -72,6 +72,9 @@ public:
   static bool equal(Token *Tok, const char *Op);
   static Token *skip(Token *Tok, const char *Op);
   static bool equal(Token *Tok, tok::TokenKind Kind);
+
+  /// \brief Dump all tokens to stderr for debugging
+  void dumpTokens();
 };
 
 } // namespace chibcc

@@ -4,11 +4,14 @@ project(ChibCC VERSION 1.0.0 LANGUAGES CXX)
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include_directories(include)
 
 # Source files
 set(SOURCES
+    src/AST.cpp
+    src/CommandLine.cpp
     src/Diagnostic.cpp
     src/TokenKinds.cpp
     src/Tokenizer.cpp

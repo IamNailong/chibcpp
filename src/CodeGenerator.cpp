@@ -1,4 +1,5 @@
 #include "CodeGenerator.h"
+#include <cstring>
 
 namespace chibcc {
 
@@ -6,24 +7,41 @@ namespace chibcc {
 // Code Generator Implementation
 //===----------------------------------------------------------------------===//
 
+bool CodeGenerator::setOutputFile(const char *Filename) {
+  if (!Filename || strcmp(Filename, "-") == 0) {
+    Output = stdout;
+    ShouldCloseFile = false;
+    return true;
+  }
+
+  Output = fopen(Filename, "w");
+  if (!Output) {
+    fprintf(stderr, "Error: Cannot open output file '%s'\n", Filename);
+    return false;
+  }
+
+  ShouldCloseFile = true;
+  return true;
+}
+
 void CodeGenerator::push() {
-  printf("  push %%rax\n");
+  fprintf(Output, "  push %%rax\n");
   Depth++;
 }
 
 void CodeGenerator::pop(const char *Arg) {
-  printf("  pop %s\n", Arg);
+  fprintf(Output, "  pop %s\n", Arg);
   Depth--;
 }
 
 void CodeGenerator::genExpr(Node *N) {
   switch (N->Kind) {
   case NodeKind::Num:
-    printf("  mov $%d, %%rax\n", N->Val);
+    fprintf(Output, "  mov $%d, %%rax\n", N->Val);
     return;
   case NodeKind::Neg:
     genExpr(N->Lhs.get());
-    printf("  neg %%rax\n");
+    fprintf(Output, "  neg %%rax\n");
     return;
   default:
     break;
@@ -36,34 +54,34 @@ void CodeGenerator::genExpr(Node *N) {
 
   switch (N->Kind) {
   case NodeKind::Add:
-    printf("  add %%rdi, %%rax\n");
+    fprintf(Output, "  add %%rdi, %%rax\n");
     return;
   case NodeKind::Sub:
-    printf("  sub %%rdi, %%rax\n");
+    fprintf(Output, "  sub %%rdi, %%rax\n");
     return;
   case NodeKind::Mul:
-    printf("  imul %%rdi, %%rax\n");
+    fprintf(Output, "  imul %%rdi, %%rax\n");
     return;
   case NodeKind::Div:
-    printf("  cqo\n");
-    printf("  idiv %%rdi\n");
+    fprintf(Output, "  cqo\n");
+    fprintf(Output, "  idiv %%rdi\n");
     return;
   case NodeKind::Eq:
   case NodeKind::Ne:
   case NodeKind::Lt:
   case NodeKind::Le:
-    printf("  cmp %%rdi, %%rax\n");
+    fprintf(Output, "  cmp %%rdi, %%rax\n");
 
     if (N->Kind == NodeKind::Eq)
-      printf("  sete %%al\n");
+      fprintf(Output, "  sete %%al\n");
     else if (N->Kind == NodeKind::Ne)
-      printf("  setne %%al\n");
+      fprintf(Output, "  setne %%al\n");
     else if (N->Kind == NodeKind::Lt)
-      printf("  setl %%al\n");
+      fprintf(Output, "  setl %%al\n");
     else if (N->Kind == NodeKind::Le)
-      printf("  setle %%al\n");
+      fprintf(Output, "  setle %%al\n");
 
-    printf("  movzb %%al, %%rax\n");
+    fprintf(Output, "  movzb %%al, %%rax\n");
     return;
   default:
     break;
@@ -73,14 +91,14 @@ void CodeGenerator::genExpr(Node *N) {
 }
 
 void CodeGenerator::codegen(Node *N) {
-  printf("  .globl main\n");
-  printf("main:\n");
+  fprintf(Output, ".globl main\n");
+  fprintf(Output, "main:\n");
 
   genExpr(N);
-  printf("  ret\n");
+  fprintf(Output, "  ret\n");
 
   // Add GNU stack note to prevent executable stack warning
-  printf("  .section .note.GNU-stack,\"\",%%progbits\n");
+  fprintf(Output, ".section .note.GNU-stack,\"\",%%progbits\n");
 
   assert(Depth == 0);
 }

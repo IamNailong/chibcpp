@@ -1,4 +1,5 @@
 #include "Tokenizer.h"
+#include <iostream>
 
 namespace chibcc {
 
@@ -403,6 +404,33 @@ Token *Lexer::skip(Token *Tok, const char *Op) {
   if (!equal(Tok, Op))
     errorTok(Tok, "expected '%s'", Op);
   return Tok->Next.get();
+}
+
+void Lexer::dumpTokens() {
+  std::cerr << "=== Token Dump ===\n";
+
+  // Save current position
+  const char *SavedPtr = BufferPtr;
+
+  // Reset to beginning
+  BufferPtr = BufferStart;
+
+  // Lex and dump all tokens
+  while (true) {
+    auto Tok = lex();
+    if (!Tok)
+      break;
+
+    Tok->dump(BufferStart);
+
+    if (Tok->Kind == tok::eof)
+      break;
+  }
+
+  std::cerr << "=== End Token Dump ===\n\n";
+
+  // Restore position
+  BufferPtr = SavedPtr;
 }
 
 } // namespace chibcc

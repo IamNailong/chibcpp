@@ -30,6 +30,14 @@ public:
   int Val;
 
   explicit Node(NodeKind K) : Kind(K), Lhs(nullptr), Rhs(nullptr), Val(0) {}
+
+  // Dump AST to stderr for debugging
+  void dump() const;
+  void dump(int Indent) const;
+
+private:
+  // Get string representation of node kind
+  const char *getKindName() const;
 };
 
 } // namespace chibcc

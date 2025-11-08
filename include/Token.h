@@ -111,6 +111,10 @@ public:
   bool isOneOf(tok::TokenKind K1, tok::TokenKind K2, Ts... Ks) const {
     return is(K1) || isOneOf(K2, Ks...);
   }
+
+  // Dump token to stderr for debugging (LLVM-style)
+  void dump() const;
+  void dump(const char *InputStart) const;
 };
 
 class DiagnosticEngine;

@@ -4,3 +4,4 @@ install
 test_cases
 test_results
 a.out
+*.s

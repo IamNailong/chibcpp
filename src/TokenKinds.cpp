@@ -1,4 +1,5 @@
 #include "Token.h"
+#include <iostream>
 
 namespace chibcc {
 namespace tok {
@@ -40,4 +41,34 @@ const char *getKeywordSpelling(TokenKind Kind) {
 }
 
 } // namespace tok
+
+void Token::dump() const {
+  dump(nullptr);
+}
+
+void Token::dump(const char *InputStart) const {
+  std::cerr << "Token: " << tok::getTokenName(Kind);
+
+  if (Loc && Len > 0) {
+    std::cerr << " '" << std::string(Loc, Len) << "'";
+  }
+
+  if (Kind == tok::numeric_constant) {
+    std::cerr << " (value: " << IntegerValue << ")";
+  }
+
+  // Print offset from input start if available
+  if (Loc) {
+    if (InputStart) {
+      std::cerr << " at offset " << (Loc - InputStart);
+    } else {
+      std::cerr << " at " << static_cast<const void*>(Loc);
+    }
+  } else {
+    std::cerr << " at (null)";
+  }
+
+  std::cerr << "\n";
+}
+
 } // namespace chibcc
