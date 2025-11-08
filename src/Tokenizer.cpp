@@ -4,51 +4,13 @@
 namespace chibcpp {
 
 //===----------------------------------------------------------------------===//
-// Error Handling Implementation
-//===----------------------------------------------------------------------===//
-
-static const char *CurrentInput = nullptr;
-
-void error(const char *Fmt, ...) {
-  va_list Ap;
-  va_start(Ap, Fmt);
-  vfprintf(stderr, Fmt, Ap);
-  fprintf(stderr, "\n");
-  exit(1);
-}
-
-static void verrorAt(const char *Loc, const char *Fmt, va_list Ap) {
-  int Pos = Loc - CurrentInput;
-  fprintf(stderr, "%s\n", CurrentInput);
-  fprintf(stderr, "%*s", Pos, ""); // print Pos spaces.
-  fprintf(stderr, "^ ");
-  vfprintf(stderr, Fmt, Ap);
-  fprintf(stderr, "\n");
-  exit(1);
-}
-
-void errorAt(const char *Loc, const char *Fmt, ...) {
-  va_list Ap;
-  va_start(Ap, Fmt);
-  verrorAt(Loc, Fmt, Ap);
-}
-
-void errorTok(Token *Tok, const char *Fmt, ...) {
-  va_list Ap;
-  va_start(Ap, Fmt);
-  verrorAt(Tok->Loc, Fmt, Ap);
-}
-
-//===----------------------------------------------------------------------===//
 // Lexer Implementation
 //===----------------------------------------------------------------------===//
 
 Lexer::Lexer(const char *InputStart, const char *InputEnd,
              DiagnosticEngine &Diags)
     : BufferStart(InputStart), BufferPtr(InputStart), BufferEnd(InputEnd),
-      Diags(Diags) {
-  CurrentInput = InputStart;
-}
+      Diags(Diags) {}
 
 std::unique_ptr<Token> Lexer::formToken(tok::TokenKind Kind,
                                         const char *TokStart) {
@@ -350,6 +312,13 @@ tok::TokenKind Lexer::tryMatchPunctuator(const char *CurPtr, unsigned &Size) {
 }
 
 std::unique_ptr<Token> Lexer::lex() {
+  // If we have cached lookahead tokens, return the first one
+  if (!LookaheadCache.empty()) {
+    auto Tok = std::move(LookaheadCache.front());
+    LookaheadCache.erase(LookaheadCache.begin());
+    return Tok;
+  }
+
   // Skip whitespace
   if (skipWhitespace()) {
     return formToken(tok::eof, BufferPtr);
@@ -394,17 +363,85 @@ std::unique_ptr<Token> Lexer::lex() {
   return formToken(tok::unknown, TokStart);
 }
 
+Token *Lexer::peek() {
+  return peek(1);
+}
+
+Token *Lexer::peek(unsigned N) {
+  if (N == 0)
+    return nullptr;
+
+  // Save the original position
+  const char *OriginalPtr = BufferPtr;
+
+  // Fill the lookahead cache if needed
+  while (LookaheadCache.size() < N) {
+    // Skip whitespace
+    if (skipWhitespace()) {
+      LookaheadCache.push_back(formToken(tok::eof, BufferPtr));
+      break;
+    }
+
+    const char *TokStart = BufferPtr;
+
+    // Handle end of file
+    if (BufferPtr >= BufferEnd) {
+      LookaheadCache.push_back(formToken(tok::eof, BufferPtr));
+      break;
+    }
+
+    unsigned char Char = *BufferPtr;
+    std::unique_ptr<Token> Result;
+
+    // Identifier: [a-zA-Z_]
+    if (isIdentifierHead(Char)) {
+      Result = std::make_unique<Token>();
+      lexIdentifier(*Result, TokStart);
+    }
+    // Numeric constant: [0-9]
+    else if (isdigit(Char)) {
+      Result = std::make_unique<Token>();
+      lexNumericConstant(*Result);
+    }
+    // Punctuator
+    else {
+      unsigned Size;
+      tok::TokenKind Kind = tryMatchPunctuator(TokStart, Size);
+      if (Kind != tok::unknown) {
+        BufferPtr += Size;
+        Result = formToken(Kind, TokStart);
+      } else {
+        SourceLocation Loc(TokStart);
+        Diags.report(Loc, diag::err_invalid_character,
+                     std::string("invalid character '") + char(*TokStart) + "'");
+        ++BufferPtr;
+        Result = formToken(tok::unknown, TokStart);
+      }
+    }
+
+    LookaheadCache.push_back(std::move(Result));
+
+    // Check if we hit EOF
+    if (LookaheadCache.back()->Kind == tok::eof)
+      break;
+  }
+
+  // Restore the original position
+  BufferPtr = OriginalPtr;
+
+  // Return the Nth token (1-indexed)
+  if (N <= LookaheadCache.size()) {
+    return LookaheadCache[N - 1].get();
+  }
+
+  return nullptr;
+}
+
 bool Lexer::equal(Token *Tok, const char *Op) {
   return Tok->getSpelling() == Op;
 }
 
 bool Lexer::equal(Token *Tok, tok::TokenKind Kind) { return Tok->Kind == Kind; }
-
-Token *Lexer::skip(Token *Tok, const char *Op) {
-  if (!equal(Tok, Op))
-    errorTok(Tok, "expected '%s'", Op);
-  return Tok->Next.get();
-}
 
 void Lexer::dumpTokens() {
   std::cerr << "=== Token Dump ===\n";

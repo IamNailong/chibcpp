@@ -2,6 +2,7 @@
 #define CHIBCC_PARSER_H
 
 #include "AST.h"
+#include "Diagnostic.h"
 #include "Tokenizer.h"
 
 namespace chibcpp {
@@ -13,6 +14,7 @@ namespace chibcpp {
 class Parser {
 private:
   Lexer &Lex;
+  DiagnosticEngine &Diags;
   std::unique_ptr<Token> CurTok; // Current token
 
   // Helper methods for AST node creation
@@ -30,6 +32,27 @@ private:
   bool check(const char *Op); // Check without consuming
   bool check(tok::TokenKind Kind); // Check without consuming
 
+  // Lookahead and backtracking
+  Token *peekToken(unsigned N = 1); // Peek ahead N tokens
+
+  // Parser state for backtracking
+  struct ParserState {
+    const char *LexerPos;
+    const Token *CurrentToken;
+  };
+
+  /// \brief Save current parser state for backtracking
+  ParserState saveState() const {
+    return ParserState{Lex.savePosition(), CurTok.get()};
+  }
+
+  /// \brief Restore parser to a previously saved state
+  void restoreState(const ParserState &State) {
+    Lex.resetPosition(State.LexerPos);
+    // Re-lex the current token
+    CurTok = Lex.lex();
+  }
+
   // Grammar rules
   std::unique_ptr<Node> expr();
   std::unique_ptr<Node> equality();
@@ -40,7 +63,7 @@ private:
   std::unique_ptr<Node> primary();
 
 public:
-  explicit Parser(Lexer &L) : Lex(L) {}
+  explicit Parser(Lexer &L, DiagnosticEngine &D) : Lex(L), Diags(D) {}
 
   std::unique_ptr<Node> parse();
 };

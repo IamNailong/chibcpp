@@ -117,14 +117,7 @@ public:
   void dump(const char *InputStart) const;
 };
 
-class DiagnosticEngine;
 
-void errorTok(Token *Tok, const char *Fmt, ...);
-
-/// \brief Create a diagnostic builder for token-based diagnostics
-class DiagnosticBuilder;
-DiagnosticBuilder diagnoseTok(DiagnosticEngine &Diags, Token *Tok,
-                              unsigned DiagID);
 
 } // namespace chibcpp
 

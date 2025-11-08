@@ -2,6 +2,7 @@
 #define CHIBCC_CODEGENERATOR_H
 
 #include "AST.h"
+#include "Diagnostic.h"
 #include <cstdio>
 #include <string>
 
@@ -16,13 +17,15 @@ private:
   int Depth;
   FILE *Output;
   bool ShouldCloseFile;
+  DiagnosticEngine &Diags;
 
   void push();
   void pop(const char *Arg);
   void genExpr(Node *N);
 
 public:
-  CodeGenerator() : Depth(0), Output(stdout), ShouldCloseFile(false) {}
+  CodeGenerator(DiagnosticEngine &D)
+      : Depth(0), Output(stdout), ShouldCloseFile(false), Diags(D) {}
   ~CodeGenerator() {
     if (ShouldCloseFile && Output) {
       fclose(Output);

@@ -87,7 +87,7 @@ void CodeGenerator::genExpr(Node *N) {
     break;
   }
 
-  error("invalid expression");
+  Diags.reportFatal(SourceLocation(), "invalid expression in code generation");
 }
 
 void CodeGenerator::codegen(Node *N) {

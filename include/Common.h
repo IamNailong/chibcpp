@@ -20,13 +20,6 @@ namespace chibcpp {
 class DiagnosticEngine;
 class SourceLocation;
 
-//===----------------------------------------------------------------------===//
-// Legacy Error Handling (for compatibility)
-//===----------------------------------------------------------------------===//
-
-void error(const char *Fmt, ...);
-void errorAt(const char *Loc, const char *Fmt, ...);
-
 } // namespace chibcpp
 
 #endif // CHIBCC_COMMON_H

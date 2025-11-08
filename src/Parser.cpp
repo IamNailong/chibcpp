@@ -8,9 +8,7 @@ namespace chibcpp {
 
 // Token management methods
 
-void Parser::nextToken() {
-  CurTok = Lex.lex();
-}
+void Parser::nextToken() { CurTok = Lex.lex(); }
 
 bool Parser::match(const char *Op) {
   if (check(Op)) {
@@ -30,7 +28,9 @@ bool Parser::match(tok::TokenKind Kind) {
 
 void Parser::expect(const char *Op) {
   if (!match(Op)) {
-    errorTok(CurTok.get(), "expected '%s'", Op);
+    SourceLocation Loc(CurTok ? CurTok->Loc : nullptr);
+    Diags.report(Loc, diag::err_expected_token,
+                 std::string("expected '") + Op + "'");
   }
 }
 
@@ -40,6 +40,10 @@ bool Parser::check(const char *Op) {
 
 bool Parser::check(tok::TokenKind Kind) {
   return CurTok && CurTok->Kind == Kind;
+}
+
+Token *Parser::peekToken(unsigned N) {
+  return Lex.peek(N);
 }
 
 // AST node creation helpers
@@ -73,9 +77,7 @@ std::unique_ptr<Node> Parser::newNum(int Val) {
 // Grammar rules
 
 // expr = equality
-std::unique_ptr<Node> Parser::expr() {
-  return equality();
-}
+std::unique_ptr<Node> Parser::expr() { return equality(); }
 
 // equality = relational ("==" relational | "!=" relational)*
 std::unique_ptr<Node> Parser::equality() {
@@ -189,8 +191,9 @@ std::unique_ptr<Node> Parser::primary() {
     return N;
   }
 
-  errorTok(CurTok.get(), "expected an expression");
-  return nullptr; // Never reached
+  SourceLocation Loc(CurTok ? CurTok->Loc : nullptr);
+  Diags.report(Loc, diag::err_expected_expression, "expected an expression");
+  return newNum(0); // Return dummy node to continue parsing
 }
 
 std::unique_ptr<Node> Parser::parse() {
@@ -199,8 +202,11 @@ std::unique_ptr<Node> Parser::parse() {
 
   auto N = expr();
 
-  if (!check(tok::eof))
-    errorTok(CurTok.get(), "extra token");
+  if (!check(tok::eof)) {
+    SourceLocation Loc(CurTok ? CurTok->Loc : nullptr);
+    Diags.report(Loc, diag::err_extra_tokens,
+                 "extra tokens at end of expression");
+  }
 
   return N;
 }

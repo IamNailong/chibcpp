@@ -46,7 +46,7 @@ int main(int Argc, char **Argv) {
   }
 
   // Parse input into AST (lexer is called on-demand during parsing)
-  Parser P(Lex);
+  Parser P(Lex, Diags);
   auto Ast = P.parse();
 
   // Check for errors
@@ -62,7 +62,7 @@ int main(int Argc, char **Argv) {
   }
 
   // Generate assembly code
-  CodeGenerator CG;
+  CodeGenerator CG(Diags);
 
   // Set output file
   if (!CG.setOutputFile(OutputFile.c_str())) {
