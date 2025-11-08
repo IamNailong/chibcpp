@@ -6,7 +6,7 @@
 #include <cstring>
 #include <iostream>
 
-using namespace chibcc;
+using namespace chibcpp;
 
 // Command line options
 static bool DumpTokens = false;
@@ -28,14 +28,14 @@ static cl::opt_positional OptInput("expression", "Input expression to compile",
 int main(int Argc, char **Argv) {
   // Parse command line options
   if (!cl::ParseCommandLineOptions(
-          Argc, Argv, "chibcpp - A small C compiler inspired by chibcc")) {
+          Argc, Argv, "chibcpp - A small C compiler inspired by chibcpp")) {
     return 1;
   }
 
   const char *Input = InputExpr.c_str();
 
   // Create diagnostic engine
-  DiagnosticEngine Diags(Input, "chibcc");
+  DiagnosticEngine Diags(Input, "chibcpp");
 
   // Create lexer
   Lexer Lex(Input, Input + strlen(Input), Diags);

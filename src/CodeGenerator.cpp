@@ -1,7 +1,7 @@
 #include "CodeGenerator.h"
 #include <cstring>
 
-namespace chibcc {
+namespace chibcpp {
 
 //===----------------------------------------------------------------------===//
 // Code Generator Implementation
@@ -103,4 +103,4 @@ void CodeGenerator::codegen(Node *N) {
   assert(Depth == 0);
 }
 
-} // namespace chibcc
+} // namespace chibcpp

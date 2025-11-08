@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace chibcc {
+namespace chibcpp {
 
 //===----------------------------------------------------------------------===//
 // Forward Declarations
@@ -27,6 +27,6 @@ class SourceLocation;
 void error(const char *Fmt, ...);
 void errorAt(const char *Loc, const char *Fmt, ...);
 
-} // namespace chibcc
+} // namespace chibcpp
 
 #endif // CHIBCC_COMMON_H

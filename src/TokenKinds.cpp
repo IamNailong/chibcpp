@@ -1,7 +1,7 @@
 #include "Token.h"
 #include <iostream>
 
-namespace chibcc {
+namespace chibcpp {
 namespace tok {
 
 static const char *const TokNames[] = {
@@ -71,4 +71,4 @@ void Token::dump(const char *InputStart) const {
   std::cerr << "\n";
 }
 
-} // namespace chibcc
+} // namespace chibcpp

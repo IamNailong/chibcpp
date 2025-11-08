@@ -4,7 +4,7 @@
 #include "Diagnostic.h"
 #include "Token.h"
 
-namespace chibcc {
+namespace chibcpp {
 
 //===----------------------------------------------------------------------===//
 // Lexer - This provides a simple interface that turns a text buffer into a
@@ -77,6 +77,6 @@ public:
   void dumpTokens();
 };
 
-} // namespace chibcc
+} // namespace chibcpp
 
 #endif // CHIBCC_TOKENIZER_H

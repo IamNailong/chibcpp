@@ -1,7 +1,7 @@
 //===--- DiagnosticKinds.def - C Family Diagnostic Kind Database -*- C++
 //-*-===//
 //
-// Part of the ChibCC Project
+// Part of the chibcpp Project
 //
 //===----------------------------------------------------------------------===//
 //

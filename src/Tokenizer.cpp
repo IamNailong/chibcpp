@@ -1,7 +1,7 @@
 #include "Tokenizer.h"
 #include <iostream>
 
-namespace chibcc {
+namespace chibcpp {
 
 //===----------------------------------------------------------------------===//
 // Error Handling Implementation
@@ -433,4 +433,4 @@ void Lexer::dumpTokens() {
   BufferPtr = SavedPtr;
 }
 
-} // namespace chibcc
+} // namespace chibcpp

@@ -4,7 +4,7 @@
 #include "AST.h"
 #include "Tokenizer.h"
 
-namespace chibcc {
+namespace chibcpp {
 
 //===----------------------------------------------------------------------===//
 // Parser - Recursive descent parser with integrated lexer
@@ -45,6 +45,6 @@ public:
   std::unique_ptr<Node> parse();
 };
 
-} // namespace chibcc
+} // namespace chibcpp
 
 #endif // CHIBCC_PARSER_H

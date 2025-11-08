@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <string>
 
-namespace chibcc {
+namespace chibcpp {
 
 //===----------------------------------------------------------------------===//
 // Code Generator
@@ -35,6 +35,6 @@ public:
   void codegen(Node *N);
 };
 
-} // namespace chibcc
+} // namespace chibcpp
 
 #endif // CHIBCC_CODEGENERATOR_H

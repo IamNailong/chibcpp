@@ -1,7 +1,7 @@
 #include "Diagnostic.h"
 #include <iostream>
 
-namespace chibcc {
+namespace chibcpp {
 
 //===----------------------------------------------------------------------===//
 // Diagnostic Level and Text Tables
@@ -193,4 +193,4 @@ void DiagnosticEngine::reportFatal(SourceLocation Loc,
   emitDiagnostic(Loc, DiagnosticLevel::Fatal, Message);
 }
 
-} // namespace chibcc
+} // namespace chibcpp

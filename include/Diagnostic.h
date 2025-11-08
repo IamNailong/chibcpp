@@ -3,7 +3,7 @@
 
 #include "Common.h"
 
-namespace chibcc {
+namespace chibcpp {
 
 //===----------------------------------------------------------------------===//
 // Diagnostic Levels
@@ -182,6 +182,6 @@ public:
   }
 };
 
-} // namespace chibcc
+} // namespace chibcpp
 
 #endif // CHIBCC_DIAGNOSTIC_H

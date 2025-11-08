@@ -3,7 +3,7 @@
 #include <cstring>
 #include <iostream>
 
-namespace chibcc {
+namespace chibcpp {
 namespace cl {
 
 void OptionRegistry::registerOption(Option *Opt) {
@@ -156,4 +156,4 @@ bool ParseCommandLineOptions(int Argc, char **Argv,
 }
 
 } // namespace cl
-} // namespace chibcc
+} // namespace chibcpp

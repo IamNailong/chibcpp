@@ -3,7 +3,7 @@
 
 #include "Common.h"
 
-namespace chibcc {
+namespace chibcpp {
 
 //===----------------------------------------------------------------------===//
 // Token Types
@@ -126,6 +126,6 @@ class DiagnosticBuilder;
 DiagnosticBuilder diagnoseTok(DiagnosticEngine &Diags, Token *Tok,
                               unsigned DiagID);
 
-} // namespace chibcc
+} // namespace chibcpp
 
 #endif // CHIBCC_TOKEN_H

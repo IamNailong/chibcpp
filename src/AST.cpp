@@ -1,7 +1,7 @@
 #include "AST.h"
 #include <iostream>
 
-namespace chibcc {
+namespace chibcpp {
 
 const char *Node::getKindName() const {
   switch (Kind) {
@@ -55,4 +55,4 @@ void Node::dump(int Indent) const {
   }
 }
 
-} // namespace chibcc
+} // namespace chibcpp

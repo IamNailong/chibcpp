@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Test script for chibcc compiler
+# Test script for chibcpp compiler
 # Usage: ./test_compiler.sh
 
 # Don't exit on error, we want to capture and report them
 
-COMPILER="./build/bin/chibcc"
+COMPILER="./build/bin/chibcpp"
 TEST_DIR="test_cases"
 RESULTS_DIR="test_results"
 
@@ -23,21 +23,21 @@ run_test() {
     local test_name="$1"
     local input="$2"
     local expected_exit_code="${3:-0}"
-    
+
     echo -e "${YELLOW}Testing: $test_name${NC}"
     echo "Input: $input"
-    
+
     # Generate assembly
     if $COMPILER "$input" > "$RESULTS_DIR/${test_name}.s" 2> "$RESULTS_DIR/${test_name}.err"; then
         echo -e "${GREEN}✓ Compilation successful${NC}"
-        
+
         # Add GNU stack note to fix linker warning
         echo ".section .note.GNU-stack,\"\",@progbits" >> "$RESULTS_DIR/${test_name}.s"
-        
+
         # Show generated assembly
         echo "Generated assembly:"
         cat "$RESULTS_DIR/${test_name}.s"
-        
+
         # Try to assemble and link
         if gcc -o "$RESULTS_DIR/${test_name}" "$RESULTS_DIR/${test_name}.s" 2>/dev/null; then
             # Run the executable

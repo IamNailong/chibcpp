@@ -1,6 +1,6 @@
-# ChibCC - A C Compiler Implementation in C++
+# chibcpp - A C Compiler Implementation in C++
 
-A C++ implementation inspired by [chibicc](https://github.com/rui314/chibicc).
+A C++ implementation inspired by [chibicc](https://github.com/rui314/chibcc).
 
 ## Project Overview
 
@@ -15,7 +15,7 @@ cmake ..
 make
 
 # Run
-./bin/chibcc "1+2*3"
+./bin/chibcpp "1+2*3"
 
 # Test
 ./test_compiler.sh
@@ -27,3 +27,4 @@ This section documents the incremental development process, explaining what each
 
 #### [`651a633`](https://github.com/IamNailong/chibcpp/commit/651a633) - Support basic numeric expressions
 #### [`25b4797`](https://github.com/IamNailong/chibcpp/commit/25b4797) - Refactor parser to integrate lexer
+#### [`5ba64ca`](https://github.com/IamNailong/chibcpp/commit/72b335c030f3454ae39707a34a7a260f85ba64ca) - Add LLVM-style debugging and CLI parser

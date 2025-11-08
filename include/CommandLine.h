@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace chibcc {
+namespace chibcpp {
 namespace cl {
 
 //===----------------------------------------------------------------------===//
@@ -138,6 +138,6 @@ bool ParseCommandLineOptions(int Argc, char **Argv,
                               const std::string &Description = "");
 
 } // namespace cl
-} // namespace chibcc
+} // namespace chibcpp
 
 #endif // CHIBCC_COMMANDLINE_H

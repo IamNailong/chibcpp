@@ -1,6 +1,6 @@
 #include "Parser.h"
 
-namespace chibcc {
+namespace chibcpp {
 
 //===----------------------------------------------------------------------===//
 // Parser Implementation
@@ -196,13 +196,13 @@ std::unique_ptr<Node> Parser::primary() {
 std::unique_ptr<Node> Parser::parse() {
   // Initialize by reading first token
   nextToken();
-  
+
   auto N = expr();
-  
+
   if (!check(tok::eof))
     errorTok(CurTok.get(), "extra token");
-  
+
   return N;
 }
 
-} // namespace chibcc
+} // namespace chibcpp

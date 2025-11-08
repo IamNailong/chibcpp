@@ -3,7 +3,7 @@
 
 #include "Common.h"
 
-namespace chibcc {
+namespace chibcpp {
 
 //===----------------------------------------------------------------------===//
 // AST Node Types
@@ -40,6 +40,6 @@ private:
   const char *getKindName() const;
 };
 
-} // namespace chibcc
+} // namespace chibcpp
 
 #endif // CHIBCC_AST_H
