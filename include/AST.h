@@ -20,6 +20,7 @@ enum class NodeKind {
   Lt,  // <
   Le,  // <=
   Num, // Integer
+  Seq, // Sequence of statements
 };
 
 class Node {

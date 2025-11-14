@@ -43,6 +43,10 @@ void CodeGenerator::genExpr(Node *N) {
     genExpr(N->Lhs.get());
     fprintf(Output, "  neg %%rax\n");
     return;
+  case NodeKind::Seq:
+    genExpr(N->Lhs.get());
+    genExpr(N->Rhs.get());
+    return;
   default:
     break;
   }

@@ -31,17 +31,12 @@ bool OptionRegistry::parseCommandLine(int Argc, char **Argv) {
 
     // Check if it's an option (starts with -)
     if (Arg[0] == '-' && Arg[1] != '\0') {
-      // Check if it's a negative number (like -5, -123)
-      bool IsNumber = true;
-      for (int J = 1; Arg[J] != '\0'; ++J) {
-        if (!std::isdigit(static_cast<unsigned char>(Arg[J]))) {
-          IsNumber = false;
-          break;
-        }
-      }
+      // Check if it starts with a negative number (like -5, -123, -5;)
+      // This handles expressions starting with negative numbers
+      bool StartsWithNegativeNumber = std::isdigit(static_cast<unsigned char>(Arg[1]));
 
-      // If it looks like a negative number, treat as positional
-      if (IsNumber) {
+      // If it starts with a negative number, treat as positional (expression)
+      if (StartsWithNegativeNumber) {
         if (PositionalIndex < (int)Registry.Positionals.size()) {
           Registry.Positionals[PositionalIndex]->parse(Arg);
           ++PositionalIndex;

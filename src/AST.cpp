@@ -25,6 +25,8 @@ const char *Node::getKindName() const {
     return "Le";
   case NodeKind::Num:
     return "Num";
+  case NodeKind::Seq:
+    return "Seq";
   }
   return "Unknown";
 }

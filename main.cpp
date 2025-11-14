@@ -12,15 +12,15 @@ using namespace chibcpp;
 static bool DumpTokens = false;
 static bool DumpAST = false;
 static std::string InputExpr;
-static std::string OutputFile = "output.s";
+static std::string OutputFile = "-";
 
 static cl::opt_bool OptDumpTokens("dump-tokens", "Dump all tokens to stderr",
                                   DumpTokens);
 
 static cl::opt_bool OptDumpAST("dump-ast", "Dump the AST to stderr", DumpAST);
 
-static cl::opt_string OptOutput("o", "Output file (default: output.s)",
-                                OutputFile, "output.s");
+static cl::opt_string OptOutput("o", "Output file (default: stdout)",
+                                OutputFile, "-");
 
 static cl::opt_positional OptInput("expression", "Input expression to compile",
                                    InputExpr);

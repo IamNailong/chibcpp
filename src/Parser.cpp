@@ -42,9 +42,7 @@ bool Parser::check(tok::TokenKind Kind) {
   return CurTok && CurTok->Kind == Kind;
 }
 
-Token *Parser::peekToken(unsigned N) {
-  return Lex.peek(N);
-}
+Token *Parser::peekToken(unsigned N) { return Lex.peek(N); }
 
 // AST node creation helpers
 
@@ -78,6 +76,16 @@ std::unique_ptr<Node> Parser::newNum(int Val) {
 
 // expr = equality
 std::unique_ptr<Node> Parser::expr() { return equality(); }
+
+// stmt = expr_stmt;
+std::unique_ptr<Node> Parser::stmt() { return expr_stmt(); }
+
+// expr_stmt = expr ";"
+std::unique_ptr<Node> Parser::expr_stmt() {
+  auto N = expr();
+  expect(";");
+  return N;
+}
 
 // equality = relational ("==" relational | "!=" relational)*
 std::unique_ptr<Node> Parser::equality() {
@@ -200,15 +208,32 @@ std::unique_ptr<Node> Parser::parse() {
   // Initialize by reading first token
   nextToken();
 
-  auto N = expr();
+  // Parse first statement
+  auto FirstStmt = stmt();
 
+  // If there are more statements, create a sequence
   if (!check(tok::eof)) {
-    SourceLocation Loc(CurTok ? CurTok->Loc : nullptr);
-    Diags.report(Loc, diag::err_extra_tokens,
-                 "extra tokens at end of expression");
+    // Collect all remaining statements
+    std::vector<std::unique_ptr<Node>> Stmts;
+    Stmts.push_back(std::move(FirstStmt));
+
+    while (!check(tok::eof)) {
+      Stmts.push_back(stmt());
+    }
+
+    // Build sequence tree: Seq(Stmt1, Seq(Stmt2, Seq(Stmt3, ...)))
+    std::unique_ptr<Node> Seq = std::move(Stmts.back());
+    for (int I = Stmts.size() - 2; I >= 0; --I) {
+      auto SeqNode = newNode(NodeKind::Seq);
+      SeqNode->Lhs = std::move(Stmts[I]);
+      SeqNode->Rhs = std::move(Seq);
+      Seq = std::move(SeqNode);
+    }
+
+    return Seq;
   }
 
-  return N;
+  return FirstStmt;
 }
 
 } // namespace chibcpp

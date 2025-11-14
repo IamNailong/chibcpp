@@ -55,6 +55,8 @@ private:
 
   // Grammar rules
   std::unique_ptr<Node> expr();
+  std::unique_ptr<Node> stmt();
+  std::unique_ptr<Node> expr_stmt();
   std::unique_ptr<Node> equality();
   std::unique_ptr<Node> relational();
   std::unique_ptr<Node> add();
